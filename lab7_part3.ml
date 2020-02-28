@@ -3,6 +3,10 @@
                    Modules and Abstract Data Types
  *)
 
+(*
+                               SOLUTION
+ *)
+
 (* Objective: This lab practices concepts of modules, including files
 as modules, signatures, and polymorphic abstract data types.
 
@@ -62,24 +66,24 @@ module IntListStack =
     let empty : stack = []
 
     (* push i s -- Adds an integer element i to the top of stack s *)
-    let push (i : int) (s : stack) : stack = i :: s
+    let push (i : int) (s : stack) : stack =
+      i :: s
 
     (* top s -- Returns the value of the topmost element on stack s,
        raising the EmptyStack exception if there is no element to be
        returned. *)
     let top (s : stack) : int =
       match s with
-      | [] -> raise (EmptyStack "stack is empty")
-      | hd :: _ -> hd
+      | [] -> raise EmptyStack
+      | h :: _ -> h
 
     (* pop s -- Returns a stack with the topmost element from s
        removed, raising the EmptyStack exception if there is no
        element to be removed. *)
     let pop (s : stack) : stack =
       match s with
-      | [] -> raise (EmptyStack "stack is empty")
-      | _ :: tl -> tl
-
+      | [] -> raise EmptyStack
+      | _ :: t -> t
   end ;;
 
 (* Now let's use this implementation and consider some implications.
@@ -92,6 +96,7 @@ order.
 ......................................................................*)
 
 let small_stack () : IntListStack.stack =
+  let open IntListStack in
   empty
   |> push 5
   |> push 1 ;;
@@ -101,7 +106,7 @@ Exercise 3C: Now, use `IntListStack` functions to write an expression that
 defines `last_el` as the value of the topmost element from `small_stack`.
 ......................................................................*)
 
-let last_el = IntListStack.top (small_stack ());;
+let last_el = IntListStack.top (small_stack ()) ;;
 
 (* Based on our requirements above, what should the value `last_el` be?
 
@@ -121,8 +126,8 @@ with the elements inverted, *without using any of the `IntListStack`
 methods*.
 ......................................................................*)
 
-let invert_stack (s : IntListStack.stack) : IntListStack.stack =
-  List.rev s ;;
+let invert_stack : IntListStack.stack -> IntListStack.stack =
+  List.rev ;;
 
 (* Now what would be the result of the top operation on a stack
 inverted with `invert_stack`? Let's try it.
@@ -202,3 +207,12 @@ let safe_stack () : SafeIntListStack.stack =
   empty
   |> push 5
   |> push 1 ;;
+
+(* The type of safe_stack is
+
+       unit -> SafeIntListStack.stack
+
+   Notice that the return type is the *abstract* type
+   `SafeIntListStack.stack`, not `int list` or some other type whose
+   values can be manipulated by functions others than those allowed by
+   the `INT_STACK` interface. *)
